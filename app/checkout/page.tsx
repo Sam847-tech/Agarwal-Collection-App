@@ -1,23 +1,31 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { useSafeCart } from "@/lib/safeStore"
+import { useSafeCart, useSafeOrders } from "@/lib/safeStore";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
-  const cart = useSafeCart()
-  const total = cart.reduce((sum, i) => sum + i.product.price * i.quantity, 0)
+  const cart = useSafeCart((state) => state.cart);
+  const clearCart = useSafeCart((state) => state.clearCart);
+  const addOrder = useSafeOrders((state) => state.addOrder);
+  const router = useRouter();
+
+  const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+  const handleCheckout = () => {
+    if (cart.length === 0) return;
+    addOrder({ id: Date.now().toString(), date: new Date().toISOString(), total });
+    clearCart();
+    router.push("/profile");
+  };
 
   return (
-    <main className="p-8">
-      <h1 className="text-2xl font-bold mb-6">Checkout</h1>
-      {cart.length === 0 ? (
-        <p>Your cart is empty.</p>
-      ) : (
-        <div>
-          <p>Total: ₹{total}</p>
-          <Button className="mt-4">Place Order</Button>
-        </div>
-      )}
+    <main className="min-h-screen flex flex-col items-center justify-center text-center p-6">
+      <h2 className="text-2xl font-bold mb-2">Checkout</h2>
+      <p className="mb-4">Order Total: ₹{total.toLocaleString()}</p>
+      <Button size="lg" onClick={handleCheckout} disabled={cart.length === 0}>
+        Place Order
+      </Button>
     </main>
-  )
+  );
 }
