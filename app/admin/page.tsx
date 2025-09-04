@@ -26,6 +26,9 @@ export default function AdminPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
 
+  // ✅ Always call hooks first
+  const orders = useAppStore((state) => state.orders ?? [])
+
   // Redirect unauthenticated users
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -51,7 +54,6 @@ export default function AdminPage() {
   }
 
   // === Dashboard Data ===
-  const orders = useAppStore((state) => state.orders ?? [])
   const totalProducts = mockProducts.length
   const totalOrders = orders.length
   const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0)
