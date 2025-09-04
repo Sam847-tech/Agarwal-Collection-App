@@ -1,31 +1,37 @@
-"use client"
+"use client";
 
-import { useSafeUser, useSafeOrders } from "@/lib/safeStore"
+import { useSafeUser, useSafeOrders } from "@/lib/safeStore";
 
 export default function ProfilePage() {
-  const user = useSafeUser()
-  const orders = useSafeOrders()
+  const user = useSafeUser((state) => state.user);
+  const orders = useSafeOrders((state) => state.orders);
 
   return (
-    <main className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Profile</h1>
+    <main className="min-h-screen p-6">
+      <h2 className="text-2xl font-bold mb-4">Profile</h2>
+
       {user ? (
-        <p className="mb-4">Welcome, {user.name}</p>
+        <div className="mb-6">
+          <p><strong>Name:</strong> {user.name}</p>
+          <p><strong>Email:</strong> {user.email}</p>
+        </div>
       ) : (
-        <p className="mb-4">You are not logged in.</p>
+        <p className="text-muted-foreground mb-6">No user logged in.</p>
       )}
-      <h2 className="text-xl font-semibold mb-2">Your Orders</h2>
+
+      <h3 className="text-xl font-semibold mb-2">Order History</h3>
       {orders.length === 0 ? (
-        <p>No orders yet.</p>
+        <p className="text-muted-foreground">No orders yet.</p>
       ) : (
-        <ul className="list-disc pl-6">
+        <ul className="space-y-2">
           {orders.map((o) => (
-            <li key={o.id}>
-              Order #{o.id} – Total ₹{o.total}
+            <li key={o.id} className="border rounded p-3 flex justify-between">
+              <span>{new Date(o.date).toLocaleDateString()}</span>
+              <span>₹{o.total.toLocaleString()}</span>
             </li>
           ))}
         </ul>
       )}
     </main>
-  )
+  );
 }
