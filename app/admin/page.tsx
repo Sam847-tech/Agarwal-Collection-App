@@ -1,22 +1,62 @@
 "use client"
 
+import { useSession, signOut } from "next-auth/react"
+import { useRouter } from "next/navigation"
+import { useEffect } from "react"
+
+// components
 import { AdminSidebar } from "@/components/admin-sidebar"
 import { AdminHeader } from "@/components/admin-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { TrendingUp, Package, ShoppingCart, Users, IndianRupee, Eye, ArrowUpRight, ArrowDownRight } from "lucide-react"
+import {
+  TrendingUp,
+  Package,
+  ShoppingCart,
+  Users,
+  IndianRupee,
+  Eye,
+  ArrowUpRight,
+  ArrowDownRight,
+} from "lucide-react"
 import { mockProducts } from "@/lib/data"
 import { useAppStore } from "@/lib/store"
 
-export default function AdminDashboard() {
-  const orders = useAppStore((state) => state.orders)
+export default function AdminPage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
 
-  // Calculate metrics
+  // Redirect unauthenticated users
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login")
+    }
+  }, [status, router])
+
+  if (status === "loading") {
+    return <p className="flex justify-center items-center h-screen">Loading...</p>
+  }
+
+  // ✅ Restrict access only to your Gmail
+  if (session?.user?.email !== "sambhavarya87@gmail.com") {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <h1 className="text-xl font-bold">🚫 Access Denied</h1>
+        <p>You do not have permission to view this page.</p>
+        <Button onClick={() => signOut({ callbackUrl: "/login" })} className="mt-4">
+          Sign Out
+        </Button>
+      </div>
+    )
+  }
+
+  // === Dashboard Data ===
+  const orders = useAppStore((state) => state.orders)
   const totalProducts = mockProducts.length
   const totalOrders = orders.length
   const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0)
-  const pendingOrders = orders.filter((order) => order.status === "pending").length
+  const recentOrders = orders.slice(0, 5)
 
   const metrics = [
     {
@@ -48,8 +88,6 @@ export default function AdminDashboard() {
       icon: Users,
     },
   ]
-
-  const recentOrders = orders.slice(0, 5)
 
   return (
     <div className="flex h-screen bg-background">
@@ -93,6 +131,7 @@ export default function AdminDashboard() {
             ))}
           </div>
 
+          {/* Recent Orders + Low Stock */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Recent Orders */}
             <Card>
@@ -104,9 +143,9 @@ export default function AdminDashboard() {
                 </Button>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {recentOrders.length > 0 ? (
-                    recentOrders.map((order) => (
+                {recentOrders.length > 0 ? (
+                  <div className="space-y-4">
+                    {recentOrders.map((order) => (
                       <div
                         key={order.id}
                         className="flex items-center justify-between p-3 border border-border rounded-lg"
@@ -118,34 +157,21 @@ export default function AdminDashboard() {
                         </div>
                         <div className="text-right">
                           <p className="font-medium text-sm">₹{order.total.toLocaleString()}</p>
-                          <Badge
-                            variant="outline"
-                            className={
-                              order.status === "pending"
-                                ? "border-yellow-500 text-yellow-700"
-                                : order.status === "confirmed"
-                                  ? "border-blue-500 text-blue-700"
-                                  : order.status === "delivered"
-                                    ? "border-green-500 text-green-700"
-                                    : "border-gray-500 text-gray-700"
-                            }
-                          >
-                            {order.status}
-                          </Badge>
+                          <Badge>{order.status}</Badge>
                         </div>
                       </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-8">
-                      <ShoppingCart className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                      <p className="text-muted-foreground">No orders yet</p>
-                    </div>
-                  )}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <ShoppingCart className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <p className="text-muted-foreground">No orders yet</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
-            {/* Low Stock Products */}
+            {/* Low Stock */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Low Stock Alert</CardTitle>
@@ -157,7 +183,7 @@ export default function AdminDashboard() {
               <CardContent>
                 <div className="space-y-4">
                   {mockProducts
-                    .filter((product) => product.stock <= 5)
+                    .filter((p) => p.stock <= 5)
                     .slice(0, 5)
                     .map((product) => (
                       <div
@@ -168,49 +194,13 @@ export default function AdminDashboard() {
                           <p className="font-medium text-sm line-clamp-1">{product.name}</p>
                           <p className="text-xs text-muted-foreground capitalize">{product.category}</p>
                         </div>
-                        <div className="text-right">
-                          <Badge
-                            variant="outline"
-                            className={
-                              product.stock === 0
-                                ? "border-red-500 text-red-700"
-                                : product.stock <= 3
-                                  ? "border-orange-500 text-orange-700"
-                                  : "border-yellow-500 text-yellow-700"
-                            }
-                          >
-                            {product.stock} left
-                          </Badge>
-                        </div>
+                        <Badge>{product.stock} left</Badge>
                       </div>
                     ))}
                 </div>
               </CardContent>
             </Card>
           </div>
-
-          {/* Quick Actions */}
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Button variant="outline" className="h-20 flex-col gap-2 bg-transparent">
-                  <Package className="h-6 w-6" />
-                  Add New Product
-                </Button>
-                <Button variant="outline" className="h-20 flex-col gap-2 bg-transparent">
-                  <ShoppingCart className="h-6 w-6" />
-                  Process Orders
-                </Button>
-                <Button variant="outline" className="h-20 flex-col gap-2 bg-transparent">
-                  <TrendingUp className="h-6 w-6" />
-                  View Analytics
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
         </main>
       </div>
     </div>
