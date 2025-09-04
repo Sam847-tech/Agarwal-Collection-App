@@ -1,56 +1,31 @@
 "use client";
 
-import { useAppStore } from "@/lib/store"
-import { mockOrders } from "@/lib/mockData"
+import { useAppStore } from "@/lib/store";
+import { useEffect } from "react";
 
 export default function OrdersPage() {
-  const storeOrders = useAppStore((state) => state.orders || [])
+  const orders = useAppStore((s) => s.orders);
 
-  // fallback to mock data if no orders in store
-  const orders = storeOrders.length > 0 ? storeOrders : mockOrders
+  useEffect(() => {
+    // Optional: load or sync orders here
+  }, []);
+
+  if (!orders || orders.length === 0) {
+    return <div className="p-4">No orders available</div>;
+  }
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6">Orders</h1>
-
-      <div className="grid gap-6">
-        {orders.map((order) => {
-          const date =
-            order.createdAt && !isNaN(new Date(order.createdAt).getTime())
-              ? new Date(order.createdAt).toLocaleDateString("en-IN", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                })
-              : "—"
-
-          const time =
-            order.createdAt && !isNaN(new Date(order.createdAt).getTime())
-              ? new Date(order.createdAt).toLocaleTimeString("en-IN", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
-              : ""
-
-          return (
-            <div
-              key={order.id}
-              className="p-4 rounded-xl shadow bg-white flex justify-between items-center"
-            >
-              <div>
-                <h3 className="font-medium text-lg">{order.id}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {date} {time && `• ${time}`}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="font-semibold">₹{order.total}</p>
-                <p className="text-sm capitalize">{order.status}</p>
-              </div>
-            </div>
-          )
-        })}
-      </div>
+      <h1 className="text-2xl font-bold mb-4">Orders</h1>
+      <ul className="space-y-2">
+        {orders.map((order, i) => (
+          <li key={i} className="border rounded p-3 shadow-sm">
+            <p><b>Order ID:</b> {order.id}</p>
+            <p><b>Customer:</b> {order.customer}</p>
+            <p><b>Status:</b> {order.status}</p>
+          </li>
+        ))}
+      </ul>
     </div>
-  )
+  );
 }
