@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useAppStore } from "@/lib/store"
 import { mockOrders } from "@/lib/mockData"
