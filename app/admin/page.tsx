@@ -4,17 +4,17 @@ import { useAppStore } from "@/lib/store"
 import { mockProducts, mockOrders } from "@/lib/mockData"
 
 export default function AdminPage() {
-  // === Dashboard Data ===
-  const orders = useAppStore((state) =>
-    state.orders.length > 0 ? state.orders : mockOrders
-  )
-  const products = useAppStore((state) =>
-    state.products.length > 0 ? state.products : mockProducts
-  )
+  // === Dashboard Data (safe hydration) ===
+  const storeOrders = useAppStore((state) => state.orders || [])
+  const storeProducts = useAppStore((state) => state.products || [])
 
-  const totalProducts = products.length
-  const totalOrders = orders.length
-  const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0)
+  // fallback to mock data if store is empty or undefined
+  const orders = storeOrders.length > 0 ? storeOrders : mockOrders
+  const products = storeProducts.length > 0 ? storeProducts : mockProducts
+
+  const totalProducts = products?.length ?? 0
+  const totalOrders = orders?.length ?? 0
+  const totalRevenue = orders?.reduce((sum, order) => sum + (order.total || 0), 0) ?? 0
 
   return (
     <div className="p-6">
@@ -58,11 +58,13 @@ export default function AdminPage() {
                   <td className="px-4 py-2">₹{order.total}</td>
                   <td className="px-4 py-2 capitalize">{order.status}</td>
                   <td className="px-4 py-2">
-                    {new Date(order.createdAt).toLocaleDateString("en-IN", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
+                    {order.createdAt
+                      ? new Date(order.createdAt).toLocaleDateString("en-IN", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })
+                      : "—"}
                   </td>
                 </tr>
               ))}
