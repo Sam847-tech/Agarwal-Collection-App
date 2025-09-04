@@ -1,12 +1,18 @@
 "use client"
 
 import { useAppStore } from "@/lib/store"
-import { mockProducts } from "@/lib/mockData"
-import { formatDate, formatTime } from "@/lib/utils"
+import { mockProducts, mockOrders } from "@/lib/mockData"
 
 export default function AdminPage() {
-  const orders = useAppStore((state) => state.orders ?? [])
-  const totalProducts = mockProducts.length
+  // === Dashboard Data ===
+  const orders = useAppStore((state) =>
+    state.orders.length > 0 ? state.orders : mockOrders
+  )
+  const products = useAppStore((state) =>
+    state.products.length > 0 ? state.products : mockProducts
+  )
+
+  const totalProducts = products.length
   const totalOrders = orders.length
   const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0)
 
@@ -14,49 +20,55 @@ export default function AdminPage() {
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
 
-      {/* === Stats Cards === */}
+      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        <div className="p-6 rounded-xl border bg-card shadow">
-          <h2 className="text-lg font-medium">Total Products</h2>
+        <div className="p-6 rounded-2xl shadow bg-white">
+          <h2 className="text-lg font-semibold">Total Products</h2>
           <p className="text-2xl font-bold mt-2">{totalProducts}</p>
         </div>
-        <div className="p-6 rounded-xl border bg-card shadow">
-          <h2 className="text-lg font-medium">Total Orders</h2>
+        <div className="p-6 rounded-2xl shadow bg-white">
+          <h2 className="text-lg font-semibold">Total Orders</h2>
           <p className="text-2xl font-bold mt-2">{totalOrders}</p>
         </div>
-        <div className="p-6 rounded-xl border bg-card shadow">
-          <h2 className="text-lg font-medium">Total Revenue</h2>
+        <div className="p-6 rounded-2xl shadow bg-white">
+          <h2 className="text-lg font-semibold">Revenue</h2>
           <p className="text-2xl font-bold mt-2">₹{totalRevenue}</p>
         </div>
       </div>
 
-      {/* === Recent Orders === */}
-      <div className="rounded-xl border bg-card shadow p-6">
+      {/* Recent Orders */}
+      <div>
         <h2 className="text-xl font-semibold mb-4">Recent Orders</h2>
-
-        {orders.length === 0 ? (
-          <p className="text-muted-foreground">No recent orders</p>
-        ) : (
-          <div className="space-y-4">
-            {orders.slice(0, 5).map((order) => (
-              <div
-                key={order.id}
-                className="flex items-center justify-between p-4 border rounded-lg"
-              >
-                <div>
-                  <h3 className="font-medium">Order #{order.id}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {formatDate(order.createdAt)} • {formatTime(order.createdAt)}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="font-semibold">₹{order.total}</p>
-                  <p className="text-sm text-muted-foreground">{order.status}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="bg-white rounded-2xl shadow p-4 overflow-x-auto">
+          <table className="w-full border border-gray-200 rounded-lg overflow-hidden">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="px-4 py-2 text-left">Order ID</th>
+                <th className="px-4 py-2 text-left">Customer</th>
+                <th className="px-4 py-2 text-left">Total</th>
+                <th className="px-4 py-2 text-left">Status</th>
+                <th className="px-4 py-2 text-left">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.slice(0, 5).map((order) => (
+                <tr key={order.id} className="border-t">
+                  <td className="px-4 py-2">{order.id}</td>
+                  <td className="px-4 py-2">{order.customerName}</td>
+                  <td className="px-4 py-2">₹{order.total}</td>
+                  <td className="px-4 py-2 capitalize">{order.status}</td>
+                  <td className="px-4 py-2">
+                    {new Date(order.createdAt).toLocaleDateString("en-IN", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )
