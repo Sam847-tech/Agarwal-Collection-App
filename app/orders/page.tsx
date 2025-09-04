@@ -1,25 +1,31 @@
-"use client"
+"use client";
 
-import { useAppStore } from "@/lib/store"
-import { formatDate, formatTime } from "@/lib/utils"
+import { useAppStore } from "@/lib/store";
+import { useEffect } from "react";
 
 export default function OrdersPage() {
-  const orders = useAppStore((state) => state.orders)
+  const orders = useAppStore((s) => s.orders);
+
+  useEffect(() => {
+    // Optional: load or sync orders here
+  }, []);
+
+  if (!orders || orders.length === 0) {
+    return <div className="p-4">No orders available</div>;
+  }
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Orders</h1>
-      <div className="space-y-4">
-        {orders.map((order) => (
-          <div key={order.id} className="p-4 border rounded-lg shadow-sm">
-            <h3 className="font-semibold text-lg">Order #{order.id}</h3>
-            <p className="text-sm text-muted-foreground">
-              {formatDate(order.createdAt)} • {formatTime(order.createdAt)}
-            </p>
-            <p className="text-sm">Total: ₹{order.total}</p>
-          </div>
+      <ul className="space-y-2">
+        {orders.map((order, i) => (
+          <li key={i} className="border rounded p-3 shadow-sm">
+            <p><b>Order ID:</b> {order.id}</p>
+            <p><b>Customer:</b> {order.customer}</p>
+            <p><b>Status:</b> {order.status}</p>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
-  )
+  );
 }
