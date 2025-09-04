@@ -5,45 +5,20 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-/**
- * Safely formats a date string, number, or Date object.
- * Returns fallback if invalid.
- */
-export function formatDateSafe(
-  value: string | number | Date | null | undefined,
-  options?: Intl.DateTimeFormatOptions,
-  locale: string = "en-IN",
-  fallback: string = "—"
-): string {
-  if (!value) return fallback
-
-  const date = new Date(value)
-  if (isNaN(date.getTime())) return fallback
-
-  try {
-    return date.toLocaleDateString(locale, options)
-  } catch {
-    return fallback
-  }
+// === Date Utilities ===
+export function formatDate(date: string | Date) {
+  const d = new Date(date)
+  return d.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  })
 }
 
-/**
- * Safely formats a time string from a date input.
- */
-export function formatTimeSafe(
-  value: string | number | Date | null | undefined,
-  options: Intl.DateTimeFormatOptions = { hour: "2-digit", minute: "2-digit" },
-  locale: string = "en-IN",
-  fallback: string = ""
-): string {
-  if (!value) return fallback
-
-  const date = new Date(value)
-  if (isNaN(date.getTime())) return fallback
-
-  try {
-    return date.toLocaleTimeString(locale, options)
-  } catch {
-    return fallback
-  }
+export function formatTime(date: string | Date) {
+  const d = new Date(date)
+  return d.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+  })
 }
