@@ -1,147 +1,41 @@
-"use client"
+"use client";
 
-import { useState, useMemo, useEffect } from "react"
-import { MobileHeader } from "@/components/mobile-header"
-import { MobileNavigation } from "@/components/mobile-navigation"
-import { ProductFilters } from "@/components/product-filters"
-import { ProductGrid } from "@/components/product-grid"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Search, X } from "lucide-react"
-import { mockProducts } from "@/lib/data"
-import { useSearchParams } from "next/navigation"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useSafeCart } from "@/lib/safeStore";
 
-interface FilterState {
-  categories: string[]
-  occasions: string[]
-  fabrics: string[]
-  priceRange: [number, number]
-  inStock: boolean
-}
+// Mock products — replace with real API/data later
+const products = [
+  { id: "1", name: "Classic Kurta", price: 899 },
+  { id: "2", name: "Sherwani", price: 2499 },
+  { id: "3", name: "Designer Saree", price: 3499 },
+];
 
 export default function ProductsPage() {
-  const searchParams = useSearchParams()
-  const initialSearch = searchParams.get("search") || ""
-
-  const [searchQuery, setSearchQuery] = useState(initialSearch)
-  const [filtersOpen, setFiltersOpen] = useState(false)
-  const [filters, setFilters] = useState<FilterState>({
-    categories: [],
-    occasions: [],
-    fabrics: [],
-    priceRange: [0, 50000],
-    inStock: false,
-  })
-
-  useEffect(() => {
-    const urlSearch = searchParams.get("search") || ""
-    setSearchQuery(urlSearch)
-  }, [searchParams])
-
-  const filteredProducts = useMemo(() => {
-    let filtered = mockProducts
-
-    // Search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase()
-      filtered = filtered.filter(
-        (product) =>
-          product.name.toLowerCase().includes(query) ||
-          product.description.toLowerCase().includes(query) ||
-          product.fabric.toLowerCase().includes(query) ||
-          product.category.toLowerCase().includes(query) ||
-          product.occasion.some((occ) => occ.toLowerCase().includes(query)),
-      )
-    }
-
-    // Category filter
-    if (filters.categories.length > 0) {
-      filtered = filtered.filter((product) => filters.categories.includes(product.category))
-    }
-
-    // Price range filter
-    filtered = filtered.filter(
-      (product) => product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1],
-    )
-
-    // Fabric filter
-    if (filters.fabrics.length > 0) {
-      filtered = filtered.filter((product) => filters.fabrics.includes(product.fabric))
-    }
-
-    // Occasion filter
-    if (filters.occasions.length > 0) {
-      filtered = filtered.filter((product) => product.occasion.some((occ) => filters.occasions.includes(occ)))
-    }
-
-    // Stock filter
-    if (filters.inStock) {
-      filtered = filtered.filter((product) => product.stock > 0)
-    }
-
-    return filtered
-  }, [searchQuery, filters])
-
-  const clearSearch = () => {
-    setSearchQuery("")
-  }
+  const addToCart = useSafeCart((state) => state.addToCart);
 
   return (
-    <div className="min-h-screen bg-background">
-      <MobileHeader />
+    <main className="min-h-screen p-6">
+      <h1 className="text-3xl font-bold mb-6">Products</h1>
 
-      <main className="pb-20 md:pb-8">
-        <div className="container mx-auto px-4 py-6">
-          {/* Page Header */}
-          <div className="mb-6">
-            <h1 className="font-serif text-2xl md:text-3xl font-bold mb-2">Our Collection</h1>
-            <p className="text-muted-foreground">Discover our exquisite range of traditional wear</p>
-          </div>
-
-          {/* Search Bar */}
-          <div className="mb-6">
-            <div className="relative max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-10"
-              />
-              {searchQuery && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8"
-                  onClick={clearSearch}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {/* Filters Sidebar */}
-            <div className="md:col-span-1">
-              <ProductFilters
-                filters={filters}
-                onFiltersChange={setFilters}
-                isOpen={filtersOpen}
-                onToggle={() => setFiltersOpen(!filtersOpen)}
-              />
-            </div>
-
-            {/* Products Grid */}
-            <div className="md:col-span-3">
-              <ProductGrid products={filteredProducts} />
-            </div>
-          </div>
-        </div>
-      </main>
-
-      <MobileNavigation />
-    </div>
-  )
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {products.map((p) => (
+          <Card key={p.id} className="flex flex-col">
+            <CardHeader>
+              <CardTitle>{p.name}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col flex-grow justify-between">
+              <p className="text-lg font-semibold mb-4">₹{p.price.toLocaleString()}</p>
+              <Button
+                className="mt-auto"
+                onClick={() => addToCart({ id: p.id, name: p.name, price: p.price, qty: 1 })}
+              >
+                Add to Cart
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </main>
+  );
 }
