@@ -1,0 +1,161 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Updated to royal blue and emerald green theme (Flipkart-style) */
+  --background: #f8fafc; /* Light slate background */
+  --foreground: #1e293b; /* Dark slate text */
+  --card: #ffffff; /* White cards */
+  --card-foreground: #1e293b; /* Dark text on cards */
+  --popover: #ffffff; /* White popovers */
+  --popover-foreground: #1e293b; /* Dark text in popovers */
+  --primary: #1e3a8a; /* Royal Blue for primary elements */
+  --primary-foreground: #ffffff; /* White text on primary */
+  --secondary: #10b981; /* Emerald Green for secondary actions */
+  --secondary-foreground: #ffffff; /* White text on secondary */
+  --muted: #f1f5f9; /* Light slate for muted backgrounds */
+  --muted-foreground: #64748b; /* Slate text for muted elements */
+  --accent: #a855f7; /* Purple for accents */
+  --accent-foreground: #ffffff; /* White text on accent */
+  --destructive: #dc2626; /* Red for destructive actions */
+  --destructive-foreground: #ffffff; /* White text on destructive */
+  --border: #e2e8f0; /* Light slate borders */
+  --input: #ffffff; /* White input fields */
+  --ring: #1e3a8a; /* Royal blue focus rings */
+  --chart-1: #1e3a8a; /* Royal Blue */
+  --chart-2: #10b981; /* Emerald Green */
+  --chart-3: #a855f7; /* Purple */
+  --chart-4: #fbbf24; /* Golden Yellow */
+  --chart-5: #64748b; /* Slate */
+  --radius: 0.5rem;
+  --sidebar: #f8fafc; /* Light slate sidebar */
+  --sidebar-foreground: #1e293b; /* Dark sidebar text */
+  --sidebar-primary: #1e3a8a; /* Royal blue sidebar primary */
+  --sidebar-primary-foreground: #ffffff; /* White sidebar primary text */
+  --sidebar-accent: #10b981; /* Emerald sidebar accent */
+  --sidebar-accent-foreground: #ffffff; /* White sidebar accent text */
+  --sidebar-border: #e2e8f0; /* Light slate sidebar border */
+  --sidebar-ring: #1e3a8a; /* Royal blue sidebar focus ring */
+  --font-geist-sans: "Geist Sans", sans-serif;
+  --font-manrope: "Manrope", sans-serif;
+}
+
+.dark {
+  /* Updated dark mode for blue/green theme */
+  --background: #0f172a; /* Dark slate background */
+  --foreground: #f1f5f9; /* Light slate text */
+  --card: #1e293b; /* Dark slate cards */
+  --card-foreground: #f1f5f9; /* Light card text */
+  --popover: #1e293b; /* Dark slate popover */
+  --popover-foreground: #f1f5f9; /* Light popover text */
+  --primary: #3b82f6; /* Lighter blue primary */
+  --primary-foreground: #f1f5f9; /* Light text on primary */
+  --secondary: #22c55e; /* Lighter green secondary */
+  --secondary-foreground: #f1f5f9; /* Light text on secondary */
+  --muted: #334155; /* Dark slate muted */
+  --muted-foreground: #94a3b8; /* Light slate muted text */
+  --accent: #c084fc; /* Lighter purple accent */
+  --accent-foreground: #0f172a; /* Dark text on accent */
+  --destructive: #ef4444; /* Lighter red destructive */
+  --destructive-foreground: #f1f5f9; /* Light destructive text */
+  --border: #334155; /* Dark slate border */
+  --input: #1e293b; /* Dark slate input */
+  --ring: #3b82f6; /* Blue focus ring */
+  --chart-1: #3b82f6; /* Lighter Blue */
+  --chart-2: #22c55e; /* Lighter Green */
+  --chart-3: #c084fc; /* Lighter Purple */
+  --chart-4: #fcd34d; /* Lighter Yellow */
+  --chart-5: #94a3b8; /* Light Slate */
+  --sidebar: #1e293b; /* Dark slate sidebar */
+  --sidebar-foreground: #f1f5f9; /* Light sidebar text */
+  --sidebar-primary: #3b82f6; /* Blue sidebar primary */
+  --sidebar-primary-foreground: #f1f5f9; /* Light sidebar primary text */
+  --sidebar-accent: #22c55e; /* Green sidebar accent */
+  --sidebar-accent-foreground: #f1f5f9; /* Light sidebar accent text */
+  --sidebar-border: #334155; /* Dark slate sidebar border */
+  --sidebar-ring: #3b82f6; /* Blue sidebar focus ring */
+}
+
+@theme inline {
+  /* Updated font variables to use Geist Sans and Manrope */
+  --font-sans: var(--font-geist-sans);
+  --font-serif: var(--font-manrope);
+  --font-mono: var(--font-geist-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  /* Updated traditional pattern with blue and green colors */
+  .traditional-pattern {
+    background-image: radial-gradient(circle at 25% 25%, rgba(30, 58, 138, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+  }
+
+  /* Updated gradient backgrounds with blue/green color scheme */
+  .gradient-primary {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  }
+
+  .gradient-secondary {
+    background: linear-gradient(135deg, #10b981 0%, #22c55e 100%);
+  }
+
+  .gradient-accent {
+    background: linear-gradient(135deg, #a855f7 0%, #c084fc 100%);
+  }
+
+  .gradient-cream {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  }
+
+  /* Enhanced button hover effects with blue theme */
+  .btn-traditional:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+    transition: all 0.2s ease-in-out;
+  }
+}
