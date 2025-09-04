@@ -11,8 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
-  ShoppingCart,
   Package,
+  ShoppingCart,
   Users,
   IndianRupee,
   Eye,
@@ -37,7 +37,7 @@ export default function AdminPage() {
     return <p className="flex justify-center items-center h-screen">Loading...</p>
   }
 
-  // Restrict to your admin email
+  // ✅ Restrict access only to your Gmail
   if (session?.user?.email !== "sambhavarya87@gmail.com") {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
@@ -51,7 +51,7 @@ export default function AdminPage() {
   }
 
   // === Dashboard Data ===
-  const orders = useAppStore((state) => state.orders)
+  const orders = useAppStore((state) => state.orders ?? [])
   const totalProducts = mockProducts.length
   const totalOrders = orders.length
   const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0)
@@ -151,9 +151,9 @@ export default function AdminPage() {
                       >
                         <div className="flex-1">
                           <p className="font-medium text-sm">{order.id}</p>
-                          <p className="text-xs text-muted-foreground">{order.customerInfo.name}</p>
+                          <p className="text-xs text-muted-foreground">{order.customerInfo?.name}</p>
                           <p className="text-xs text-muted-foreground">
-                            {new Date(order.createdAt).toLocaleDateString()}
+                            {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : "—"}
                           </p>
                         </div>
                         <div className="text-right">
