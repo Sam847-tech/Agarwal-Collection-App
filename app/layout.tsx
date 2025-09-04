@@ -1,12 +1,11 @@
-"use client"
-
 import type React from "react"
 import type { Metadata } from "next"
 import { Playfair_Display, Manrope } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
-import { SessionProvider } from "next-auth/react"   // ⬅️ import SessionProvider
 import "./globals.css"
+
+import SessionProviderWrapper from "./SessionProviderWrapper"  // ✅
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -37,11 +36,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${playfair.variable} ${manrope.variable}`}>
-        {/* ✅ Wrap everything inside SessionProvider */}
-        <SessionProvider>
+        {/* ✅ wrap with client provider */}
+        <SessionProviderWrapper>
           <Suspense fallback={null}>{children}</Suspense>
           <Analytics />
-        </SessionProvider>
+        </SessionProviderWrapper>
       </body>
     </html>
   )
