@@ -1,3 +1,5 @@
+"use client"
+
 import { create } from "zustand"
 import type { CartItem, Product, Order, User } from "./types"
 
@@ -26,7 +28,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   // Cart state
   cart: [],
   addToCart: (product, size, color, quantity = 1) => {
-    console.log("[v0] Store addToCart called:", { productId: product.id, size, color, quantity })
+    console.log("[store] addToCart:", { productId: product.id, size, color, quantity })
 
     const { cart } = get()
     const existingItem = cart.find(
@@ -34,7 +36,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     )
 
     if (existingItem) {
-      console.log("[v0] Updating existing cart item quantity")
       set({
         cart: cart.map((item) =>
           item.product.id === product.id && item.selectedSize === size && item.selectedColor === color
@@ -43,13 +44,10 @@ export const useAppStore = create<AppState>((set, get) => ({
         ),
       })
     } else {
-      console.log("[v0] Adding new item to cart")
       set({
         cart: [...cart, { product, selectedSize: size, selectedColor: color, quantity }],
       })
     }
-
-    console.log("[v0] Cart updated, new cart length:", get().cart.length)
   },
 
   removeFromCart: (productId, size, color) => {
