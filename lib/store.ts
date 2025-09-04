@@ -1,111 +1,31 @@
 import { create } from "zustand"
-import type { CartItem, Product, Order, User } from "./types"
 
-// ✅ Dummy sample orders (so Admin Dashboard has data initially)
-const dummyOrders: Order[] = [
-  {
-    id: "order_001",
-    customerInfo: { name: "Rahul Sharma", email: "rahul@example.com" },
-    items: [],
-    total: 2500,
-    status: "paid",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "order_002",
-    customerInfo: { name: "Ananya Gupta", email: "ananya@example.com" },
-    items: [],
-    total: 4200,
-    status: "shipped",
-    createdAt: new Date().toISOString(),
-  },
-]
-
-interface AppState {
-  // Cart state
-  cart: CartItem[]
-  addToCart: (product: Product, size: string, color: string, quantity?: number) => void
-  removeFromCart: (productId: string, size: string, color: string) => void
-  updateCartQuantity: (productId: string, size: string, color: string, quantity: number) => void
-  clearCart: () => void
-
-  // User state
-  user: User | null
-  setUser: (user: User | null) => void
-
-  // Orders state
-  orders: Order[]
-  addOrder: (order: Order) => void
-
-  // Wishlist state
-  wishlist: string[]
-  toggleWishlist: (productId: string) => void
+export type Order = {
+  id: string
+  customer: string
+  status: string
+  total: number
 }
 
-export const useAppStore = create<AppState>((set, get) => ({
-  // Cart state
-  cart: [],
-  addToCart: (product, size, color, quantity = 1) => {
-    const { cart } = get()
-    const existingItem = cart.find(
-      (item) => item.product.id === product.id && item.selectedSize === size && item.selectedColor === color,
-    )
+type AppState = {
+  orders: Order[]
+  addOrder: (order: Order) => void
+  removeOrder: (id: string) => void
+  clearOrders: () => void
+}
 
-    if (existingItem) {
-      set({
-        cart: cart.map((item) =>
-          item.product.id === product.id && item.selectedSize === size && item.selectedColor === color
-            ? { ...item, quantity: item.quantity + quantity }
-            : item,
-        ),
-      })
-    } else {
-      set({
-        cart: [...cart, { product, selectedSize: size, selectedColor: color, quantity }],
-      })
-    }
-  },
+export const useAppStore = create<AppState>((set) => ({
+  orders: [],
 
-  removeFromCart: (productId, size, color) => {
-    set({
-      cart: get().cart.filter(
-        (item) => !(item.product.id === productId && item.selectedSize === size && item.selectedColor === color),
-      ),
-    })
-  },
+  addOrder: (order) =>
+    set((state) => ({
+      orders: [...state.orders, order],
+    })),
 
-  updateCartQuantity: (productId, size, color, quantity) => {
-    if (quantity <= 0) {
-      get().removeFromCart(productId, size, color)
-      return
-    }
-    set({
-      cart: get().cart.map((item) =>
-        item.product.id === productId && item.selectedSize === size && item.selectedColor === color
-          ? { ...item, quantity }
-          : item,
-      ),
-    })
-  },
+  removeOrder: (id) =>
+    set((state) => ({
+      orders: state.orders.filter((o) => o.id !== id),
+    })),
 
-  clearCart: () => set({ cart: [] }),
-
-  // User state
-  user: null,
-  setUser: (user) => set({ user }),
-
-  // Orders state (✅ preload with dummy orders)
-  orders: dummyOrders,
-  addOrder: (order) => set({ orders: [...get().orders, order] }),
-
-  // Wishlist state
-  wishlist: [],
-  toggleWishlist: (productId) => {
-    const { wishlist } = get()
-    if (wishlist.includes(productId)) {
-      set({ wishlist: wishlist.filter((id) => id !== productId) })
-    } else {
-      set({ wishlist: [...wishlist, productId] })
-    }
-  },
+  clearOrders: () => set({ orders: [] }),
 }))
