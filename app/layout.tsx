@@ -1,14 +1,14 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Geist, Manrope } from "next/font/google"
+import { Playfair_Display, Manrope } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
 import "./globals.css"
 
-const geistSans = Geist({
+const playfair = Playfair_Display({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-geist-sans",
+  variable: "--font-playfair",
   weight: ["400", "600", "700", "900"],
 })
 
@@ -33,7 +33,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans ${geistSans.variable} ${manrope.variable}`}>
+      <body className={`font-sans ${playfair.variable} ${manrope.variable}`}>
         <Suspense fallback={null}>{children}</Suspense>
         <Analytics />
       </body>
