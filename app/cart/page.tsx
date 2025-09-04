@@ -1,5 +1,7 @@
 "use client"
 
+export const dynamic = "force-dynamic"
+
 import { MobileHeader } from "@/components/mobile-header"
 import { MobileNavigation } from "@/components/mobile-navigation"
 import { CartItemComponent } from "@/components/cart-item"
@@ -11,12 +13,12 @@ import { useAppStore } from "@/lib/store"
 import Link from "next/link"
 
 export default function CartPage() {
-  const cart = useAppStore((state) => state.cart)
+  const cart = useAppStore((state) => state.cart) ?? []
   const clearCart = useAppStore((state) => state.clearCart)
 
   const subtotal = cart.reduce((total, item) => total + item.product.price * item.quantity, 0)
   const shipping = subtotal > 2000 ? 0 : 99
-  const tax = Math.round(subtotal * 0.05) // 5% tax
+  const tax = Math.round(subtotal * 0.05)
   const total = subtotal + shipping + tax
 
   const totalItems = cart.reduce((total, item) => total + item.quantity, 0)
@@ -25,7 +27,6 @@ export default function CartPage() {
     return (
       <div className="min-h-screen bg-background">
         <MobileHeader />
-
         <main className="pb-20 md:pb-8">
           <div className="container mx-auto px-4 py-8">
             <div className="text-center py-12">
@@ -42,7 +43,6 @@ export default function CartPage() {
             </div>
           </div>
         </main>
-
         <MobileNavigation />
       </div>
     )
@@ -51,7 +51,6 @@ export default function CartPage() {
   return (
     <div className="min-h-screen bg-background">
       <MobileHeader />
-
       <main className="pb-20 md:pb-8">
         <div className="container mx-auto px-4 py-6">
           {/* Header */}
@@ -69,7 +68,6 @@ export default function CartPage() {
                 </p>
               </div>
             </div>
-
             <Button variant="ghost" size="sm" onClick={clearCart} className="text-destructive">
               Clear All
             </Button>
@@ -78,11 +76,12 @@ export default function CartPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-4">
-              {cart.map((item, index) => (
-                <CartItemComponent key={`${item.product.id}-${item.selectedSize}-${item.selectedColor}`} item={item} />
+              {cart.map((item) => (
+                <CartItemComponent
+                  key={`${item.product.id}-${item.selectedSize}-${item.selectedColor}`}
+                  item={item}
+                />
               ))}
-
-              {/* Continue Shopping */}
               <div className="pt-4">
                 <Link href="/products">
                   <Button variant="outline" className="w-full bg-transparent">
@@ -99,7 +98,6 @@ export default function CartPage() {
                   <CardTitle className="text-lg">Order Summary</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {/* Price Breakdown */}
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>Subtotal ({totalItems} items)</span>
@@ -122,7 +120,6 @@ export default function CartPage() {
                     </div>
                   </div>
 
-                  {/* Free Shipping Banner */}
                   {subtotal < 2000 && (
                     <div className="bg-secondary/10 border border-secondary/20 rounded-lg p-3">
                       <p className="text-sm text-secondary font-medium">
@@ -131,14 +128,12 @@ export default function CartPage() {
                     </div>
                   )}
 
-                  {/* Checkout Button */}
                   <Link href="/checkout">
                     <Button size="lg" className="w-full bg-primary hover:bg-primary/90">
                       Proceed to Checkout
                     </Button>
                   </Link>
 
-                  {/* Trust Badges */}
                   <div className="grid grid-cols-3 gap-2 pt-4 border-t border-border">
                     <div className="text-center">
                       <Truck className="h-6 w-6 mx-auto mb-1 text-muted-foreground" />
@@ -159,7 +154,6 @@ export default function CartPage() {
           </div>
         </div>
       </main>
-
       <MobileNavigation />
     </div>
   )
