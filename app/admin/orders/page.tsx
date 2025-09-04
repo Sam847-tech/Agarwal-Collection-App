@@ -4,46 +4,52 @@ import { useAppStore } from "@/lib/store"
 import { mockOrders } from "@/lib/mockData"
 
 export default function OrdersPage() {
-  // Load orders from store, fallback to mockOrders if store is empty
-  const orders = useAppStore((state) =>
-    state.orders.length > 0 ? state.orders : mockOrders
-  )
+  const storeOrders = useAppStore((state) => state.orders || [])
+
+  // fallback to mock data if no orders in store
+  const orders = storeOrders.length > 0 ? storeOrders : mockOrders
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Orders</h1>
-      <div className="overflow-x-auto">
-        <table className="w-full border border-gray-200 rounded-lg overflow-hidden">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-4 py-2 text-left">Order ID</th>
-              <th className="px-4 py-2 text-left">Customer</th>
-              <th className="px-4 py-2 text-left">Email</th>
-              <th className="px-4 py-2 text-left">Total</th>
-              <th className="px-4 py-2 text-left">Status</th>
-              <th className="px-4 py-2 text-left">Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((order) => (
-              <tr key={order.id} className="border-t">
-                <td className="px-4 py-2">{order.id}</td>
-                <td className="px-4 py-2">{order.customerName}</td>
-                <td className="px-4 py-2">{order.email}</td>
-                <td className="px-4 py-2">₹{order.total}</td>
-                <td className="px-4 py-2 capitalize">{order.status}</td>
-                <td className="px-4 py-2">
-                  {/* ✅ Safely handle string or Date */}
-                  {new Date(order.createdAt).toLocaleDateString("en-IN", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <h1 className="text-3xl font-bold mb-6">Orders</h1>
+
+      <div className="grid gap-6">
+        {orders.map((order) => {
+          const date =
+            order.createdAt && !isNaN(new Date(order.createdAt).getTime())
+              ? new Date(order.createdAt).toLocaleDateString("en-IN", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                })
+              : "—"
+
+          const time =
+            order.createdAt && !isNaN(new Date(order.createdAt).getTime())
+              ? new Date(order.createdAt).toLocaleTimeString("en-IN", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : ""
+
+          return (
+            <div
+              key={order.id}
+              className="p-4 rounded-xl shadow bg-white flex justify-between items-center"
+            >
+              <div>
+                <h3 className="font-medium text-lg">{order.id}</h3>
+                <p className="text-sm text-muted-foreground">
+                  {date} {time && `• ${time}`}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="font-semibold">₹{order.total}</p>
+                <p className="text-sm capitalize">{order.status}</p>
+              </div>
+            </div>
+          )
+        })}
       </div>
     </div>
   )
