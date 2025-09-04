@@ -1,7 +1,25 @@
-"use client"
-
 import { create } from "zustand"
 import type { CartItem, Product, Order, User } from "./types"
+
+// ✅ Dummy sample orders (so Admin Dashboard has data initially)
+const dummyOrders: Order[] = [
+  {
+    id: "order_001",
+    customerInfo: { name: "Rahul Sharma", email: "rahul@example.com" },
+    items: [],
+    total: 2500,
+    status: "paid",
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "order_002",
+    customerInfo: { name: "Ananya Gupta", email: "ananya@example.com" },
+    items: [],
+    total: 4200,
+    status: "shipped",
+    createdAt: new Date().toISOString(),
+  },
+]
 
 interface AppState {
   // Cart state
@@ -28,8 +46,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   // Cart state
   cart: [],
   addToCart: (product, size, color, quantity = 1) => {
-    console.log("[store] addToCart:", { productId: product.id, size, color, quantity })
-
     const { cart } = get()
     const existingItem = cart.find(
       (item) => item.product.id === product.id && item.selectedSize === size && item.selectedColor === color,
@@ -63,7 +79,6 @@ export const useAppStore = create<AppState>((set, get) => ({
       get().removeFromCart(productId, size, color)
       return
     }
-
     set({
       cart: get().cart.map((item) =>
         item.product.id === productId && item.selectedSize === size && item.selectedColor === color
@@ -79,8 +94,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   user: null,
   setUser: (user) => set({ user }),
 
-  // Orders state
-  orders: [],
+  // Orders state (✅ preload with dummy orders)
+  orders: dummyOrders,
   addOrder: (order) => set({ orders: [...get().orders, order] }),
 
   // Wishlist state
